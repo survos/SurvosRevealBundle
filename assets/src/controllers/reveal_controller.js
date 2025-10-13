@@ -1,37 +1,38 @@
 import { Controller } from '@hotwired/stimulus';
-import Reveal from 'reveal.js'
+import Reveal from 'reveal.js';
+import 'reveal.js/dist/reveal.css';
+// import 'reveal.js/dist/theme/black.css'; // or your preferred theme
 
-/*
-* The following line makes this controller "lazy": it won't be downloaded until needed
-* See https://github.com/symfony/stimulus-bridge#lazy-controllers
-*/
+// For code highlighting
+// import 'reveal.js/plugin/highlight/monokai.css'; // or your preferred style
+import RevealHighlight from 'reveal.js/plugin/highlight/highlight.js';
+
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static targets = ['slideshow']
     static values = {
-        slides: Array,
+        theme: String,
     }
 
-    connect()
-    {
-        super.connect();
-        let el = this.element;
-        // if (this.hasSlideshowTarget) {
-        //     // this.slideshowTarget.innerHTML = "…"
-        //     // this.slideshowTarget.innerHTML = 'test';
-        // } else {
-        //     console.error('missing slideshowTarget');
-        // }
-        console.warn("hello from " + this.identifier);
+    deck = null;
 
-        let orig = new Reveal(el, {
-            //     hash: true,
-            //     // Learn about plugins: https://revealjs.com/plugins/
-            //     plugins: [ ]
+    connect() {
+        console.log("Initializing Reveal from " + this.identifier);
 
+        this.deck = new Reveal(this.element, {
+            hash: true,
+            plugins: [ RevealHighlight ],
+            // Optional: customize behavior
+            transition: 'slide',
+            controls: true,
+            progress: true,
         });
-        orig.initialize();
 
+        this.deck.initialize();
     }
-        // ...
+
+    disconnect() {
+        if (this.deck) {
+            this.deck.destroy();
+        }
+    }
 }
